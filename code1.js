@@ -38,8 +38,11 @@ let select = null;
 let index=null;
 let tempx=null;
 let tempy=null;
-let move=null;
-
+let move=false;
+function area(x1, y1, x2, y2, x3, y3)
+{
+return Math.abs((x1*(y2-y3) + x2*(y3-y1)+ x3*(y1-y2))/2.0);
+}
 function is_inside(x, y) {
     for (var i = 0; i < list.length; i++) {
         let rx = list[i].tx;
@@ -48,19 +51,25 @@ function is_inside(x, y) {
         let ly = list[i].ty;
         let px = list[i].preX;
         let py = list[i].preY;
-        let main = Math.abs((px * (ry - ly) + rx * (ly - py) + lx * (py - ry)) / 2)
-        sub1 = Math.abs(x * (py - ry) + px * (ry - y) + rx * (y - py)) / 2
-        sub2 = Math.abs(x * (ry - ly) + rx * (ly - y) + lx * (y - ry)) / 2
-        sub3 = Math.abs(x * (py - ly) / 2 + px * (ly - y) / 2 + lx * (y - py) / 2)
+        let main=area(px,py,rx,ry,lx,ly);
+        let sub1=area(rx,ry,lx,ly,x,y);
+        let sub2=area(px,py,lx,ly,x,y);
+        let sub3=area(px,py,rx,ry,x,y);
+    
+        console.log('main',main);
+        console.log('sub1',sub1);
+        console.log('sub2',sub2);
+        console.log('sub3',sub3);
+        console.log('sub',sub1 + sub2 + sub3);
         if(move==true){
             select=select;
             index=index;
             return true;
-    }
+        }
         else if(main == sub1 + sub2 + sub3){
-            select = list[i]
-            index=i
-            return true
+            select = list[i];
+            index=i;
+            return true;
         }
     }
 }
@@ -82,6 +91,7 @@ canvas.addEventListener('mousedown', function (event) {
 })
 
 canvas.addEventListener('mouseup', function (event) {
+    move=false;
     if (is_drag(event.x, event.y) && move==false) {
         if (!(is_inside(preX,preY))) {
             draw.clearRect(0,0,innerWidth,innerHeight)
@@ -114,14 +124,10 @@ canvas.addEventListener('mousemove', function (event) {
             list[i].drawing(draw);
         }
     }
-    else{
-        move=false;
-    }
 }
 )
 canvas.addEventListener('dblclick', function(event){ 
     if (is_inside(event.x, event.y)){
-        console.log('dbclick');
         list.splice(index,1)
         draw.clearRect(0,0,innerWidth,innerHeight)
         for(var i=0; i<list.length;i++){
