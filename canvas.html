@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Paint</title>
+    <style>
+        canvas{
+            border: 2px solid black;
+        }
+        #reset{
+            padding: 15px;
+            font-size: 15px;
+        }
+        span{
+            padding: 0 100px;
+        }
+    </style>
+</head>
+
+<body>
+    <button id="reset" onclick="reset()">Reset</button>
+    <span>1.click and drag to draw triangle  2.double click to delete triangle  3.click and drag existing triangle to move</span>
+    <canvas id="canvas"></canvas>
+    <script src="code1.js"></script>
+</body>
+</html>
