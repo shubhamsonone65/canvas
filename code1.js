@@ -38,11 +38,8 @@ let select = null;
 let index=null;
 let tempx=null;
 let tempy=null;
-let move=false;
-function area(x1, y1, x2, y2, x3, y3)
-{
-return Math.abs((x1*(y2-y3) + x2*(y3-y1)+ x3*(y1-y2))/2.0);
-}
+let move=null;
+
 function is_inside(x, y) {
     for (var i = 0; i < list.length; i++) {
         let rx = list[i].tx;
@@ -51,25 +48,19 @@ function is_inside(x, y) {
         let ly = list[i].ty;
         let px = list[i].preX;
         let py = list[i].preY;
-        let main=area(px,py,rx,ry,lx,ly);
-        let sub1=area(rx,ry,lx,ly,x,y);
-        let sub2=area(px,py,lx,ly,x,y);
-        let sub3=area(px,py,rx,ry,x,y);
-    
-        console.log('main',main);
-        console.log('sub1',sub1);
-        console.log('sub2',sub2);
-        console.log('sub3',sub3);
-        console.log('sub',sub1 + sub2 + sub3);
+        let main = Math.abs((px * (ry - ly) + rx * (ly - py) + lx * (py - ry)) / 2)
+        sub1 = Math.abs(x * (py - ry) + px * (ry - y) + rx * (y - py)) / 2
+        sub2 = Math.abs(x * (ry - ly) + rx * (ly - y) + lx * (y - ry)) / 2
+        sub3 = Math.abs(x * (py - ly) / 2 + px * (ly - y) / 2 + lx * (y - py) / 2)
         if(move==true){
             select=select;
             index=index;
             return true;
-        }
+    }
         else if(main == sub1 + sub2 + sub3){
-            select = list[i];
-            index=i;
-            return true;
+            select = list[i]
+            index=i
+            return true
         }
     }
 }
@@ -80,23 +71,22 @@ function is_drag(x, y) {
     }
     else { return false }
 }
-
+var rect = canvas.getBoundingClientRect();
 canvas.addEventListener('mousedown', function (event) {
     press = true;
     move=false;
-    preX = event.x;
-    preY = event.y;
-    tempx=event.x;
-    tempy=event.y;
+    preX = event.clientX - rect.left;
+    preY = event.clientY - rect.top;
+    tempx=event.clientX - rect.left;
+    tempy=event.clientY - rect.top;
 })
 
 canvas.addEventListener('mouseup', function (event) {
-    move=false;
-    if (is_drag(event.x, event.y) && move==false) {
+    if (is_drag(event.clientX - rect.left, event.clientY - rect.top) && move==false) {
         if (!(is_inside(preX,preY))) {
             draw.clearRect(0,0,innerWidth,innerHeight)
             clr = color[Math.floor(Math.random() * color.length)]
-            list.push(new triangle(event.x, event.y, preX, preY, clr));
+            list.push(new triangle(event.clientX - rect.left, event.clientY - rect.top, preX, preY, clr));
             for(var i=0; i<list.length;i++){
                 list[i].drawing(draw)
             }
@@ -107,13 +97,13 @@ canvas.addEventListener('mouseup', function (event) {
 })
 
 canvas.addEventListener('mousemove', function (event) {
-    if (is_drag(event.x, event.y) && press == true && is_inside(event.x, event.y)) {
+    if (is_drag(event.clientX - rect.left, event.clientY - rect.top) && press == true && is_inside(event.clientX - rect.left, event.clientY - rect.top)) {
         move=true;
         console.log('moving');
-        let chx=event.x-tempx;
-        let chy=event.y-tempy;
-        tempx=event.x;
-        tempy=event.y;
+        let chx=(event.clientX - rect.left)-tempx;
+        let chy=(event.clientY - rect.top)-tempy;
+        tempx=event.clientX - rect.left;
+        tempy=event.clientY - rect.top;
         a=list[index].tx+chx;
         b=list[index].ty+chy;
         c=list[index].preX+chx;
@@ -124,10 +114,14 @@ canvas.addEventListener('mousemove', function (event) {
             list[i].drawing(draw);
         }
     }
+    else{
+        move=false;
+    }
 }
 )
 canvas.addEventListener('dblclick', function(event){ 
-    if (is_inside(event.x, event.y)){
+    if (is_inside(event.clientX - rect.left, event.clientY - rect.top)){
+        console.log('dbclick');
         list.splice(index,1)
         draw.clearRect(0,0,innerWidth,innerHeight)
         for(var i=0; i<list.length;i++){
