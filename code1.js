@@ -58,10 +58,12 @@ function is_inside(x, y) {
             return true;
     }
         else if(main == sub1 + sub2 + sub3){
+            console.log('inside')
             select = list[i]
             index=i
             return true
         }
+        
     }
 }
 
@@ -79,6 +81,7 @@ canvas.addEventListener('mousedown', function (event) {
     preY = event.clientY - rect.top;
     tempx=event.clientX - rect.left;
     tempy=event.clientY - rect.top;
+    console.log(preX,preY)
 })
 
 canvas.addEventListener('mouseup', function (event) {
@@ -93,13 +96,14 @@ canvas.addEventListener('mouseup', function (event) {
             console.log(list)
         }
     }
-    press = false
+    preX=null;
+    preY=null;
+    press = false;
 })
 
 canvas.addEventListener('mousemove', function (event) {
-    if (is_drag(event.clientX - rect.left, event.clientY - rect.top) && press == true && is_inside(event.clientX - rect.left, event.clientY - rect.top)) {
+    if (is_drag(event.clientX - rect.left, event.clientY - rect.top) && press == true && is_inside(preX,preY)) {
         move=true;
-        console.log('moving');
         let chx=(event.clientX - rect.left)-tempx;
         let chy=(event.clientY - rect.top)-tempy;
         tempx=event.clientX - rect.left;
